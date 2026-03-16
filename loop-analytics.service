@@ -1,0 +1,14 @@
+[Unit]
+Description=Loop Analytics Collector
+After=network.target tailscaled.service
+
+[Service]
+Type=simple
+User=loop-analytics
+ExecStart=/usr/bin/python3 /home/anzaika/projects/loop/collector.py
+Restart=always
+RestartSec=5
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
