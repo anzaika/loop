@@ -6,16 +6,10 @@ A JS tracker snippet, a Python collector, and a SQLite database. That's it.
 
 ## How It Works
 
-```
-Your Site                      Your Machine
-+-----------+     beacon      +------------------+     sqlite3
-| tracker.js| -------------> | collector.py     | <-------------- Claude
-|           |   sendBeacon   |                  |
-+-----------+   text/plain   +--------+---------+
-                    |                  |
-            Tailscale Funnel    +------+------+
-            (auto HTTPS)        | analytics.db|
-                                +-------------+
+```mermaid
+flowchart LR
+    A[tracker.js] -- "sendBeacon<br/>text/plain" --> B(Tailscale Funnel) --> C[collector.py] --> D[(analytics.db)]
+    E[Claude] -- sqlite3 --> D
 ```
 
 1. Visitor loads a page → `tracker.js` fires a `sendBeacon` POST with the path, referrer, and UTM params
