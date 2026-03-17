@@ -1,11 +1,13 @@
 # Loop
 
-Minimal self-hosted analytics for a static site. A JS tracker snippet, a Python collector server, and a SQLite database. Claude is the primary consumer of the data — there is no dashboard.
+Self-hosted analytics where Claude is the entire analytics layer. No dashboard, no UI — Claude reads SQLite directly, analyzes traffic, changes the site (content, UTM tags, copy), and measures what happened. That's the loop: **analyze → change → measure → repeat**.
+
+A JS tracker snippet, a Python collector, and a SQLite database. That's it.
 
 ## How It Works
 
 ```
-Static Site                    Your Machine
+Your Site                      Your Machine
 +-----------+     beacon      +------------------+     sqlite3
 | tracker.js| -------------> | collector.py     | <-------------- Claude
 |           |   sendBeacon   |                  |
@@ -19,11 +21,23 @@ Static Site                    Your Machine
 1. Visitor loads a page → `tracker.js` fires a `sendBeacon` POST with the path, referrer, and UTM params
 2. Tailscale Funnel terminates HTTPS and forwards to `collector.py` on `127.0.0.1:8080`
 3. Collector validates the request, looks up the visitor's country, and inserts a row into SQLite
-4. Claude reads the database directly via `sqlite3` to answer questions about traffic
+4. Claude reads the database directly via `sqlite3`, analyzes the data, and acts on it
 
 ## For Claude
 
-This section is written for you. The database is at `/var/lib/loop-analytics/analytics.db`.
+This section is written for you. Your job is not just to answer questions about traffic — it's to close the loop: analyze what's happening, make changes (content, UTM tags, page structure), and measure the impact.
+
+The database is at `/var/lib/loop-analytics/analytics.db`.
+
+### Service health
+
+```bash
+# Is the collector running?
+systemctl status loop-analytics
+
+# Recent logs
+journalctl -u loop-analytics -n 50 --no-pager
+```
 
 ### Connecting
 
